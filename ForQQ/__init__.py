@@ -1,0 +1,1 @@
+from ForQQ.main import *
