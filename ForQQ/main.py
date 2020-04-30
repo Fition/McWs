@@ -3,7 +3,7 @@ import asyncio
 import requests
 import json
 import socket
-import config as cfg
+import ForQQ.config as cfg
 
 qq = cfg.qq
 authKey = cfg.authKey
