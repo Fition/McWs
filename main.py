@@ -43,9 +43,13 @@ async def main(client,*args):
 	await client.send(_sm.command(_sm.say("作者:阖庐")))
 	await client.send(_sm.command(_sm.say("操作员: "+name)))
 	
+	# 用于收集指令回包
+	commandResults = []
 	while True:
 		pkt = check.getMessageInfo(await client.recv(),name)
-		asyncio.create_task(init.main(pkt,client,_sm.command))
+		if pkt["type"] == "command":
+			commandResults.append(pkt)
+		asyncio.create_task(init.main(pkt,client,_sm.command,commandResults))
 		# 判断是否需要阻塞
 		await is_wait(pkt)
 		await asyncio.sleep(0)
