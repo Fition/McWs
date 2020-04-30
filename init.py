@@ -40,9 +40,6 @@ async def main(pkt,client,command,commandResults):
 				await client.send(command(say("如果您希望更改账号配置，请修改config.py中的相关内容~~~")))
 				ForQQ._main(client,commandResults)
 
-			elif re.search(r"^#stopqq",cmd):
-
-
 			elif re.search("^#shutdown",cmd):
 				pid = os.getpid()
 				os.system(f"taskkill /f /pid {pid}")

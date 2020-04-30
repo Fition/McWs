@@ -67,14 +67,14 @@ async def send_to_mc(mc_websocket, msg):
     await mc_websocket.send(command % msg)
 
 
-async def main(mc_websocket):
+async def main(mc_websocket,commandResponse):
     session = qq_init()
     while True:
         msg = await fetch_qq(session)
         await send_to_mc(mc_websocket, msg)
 
-def _main(mc_websocket):
-	asyncio.create_task(main(mc_websocket))
+def _main(mc_websocket,commandResponse):
+	asyncio.create_task(main(mc_websocket,commandResponse))
 
 if __name__ == '__main__':
     print(f"请在MCBE里输入 /connect {get_host_ip()}:{MineacrftBE_Websocket_port}")
