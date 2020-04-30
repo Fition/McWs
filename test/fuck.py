@@ -1,0 +1,2 @@
+import shit
+shit.main()
