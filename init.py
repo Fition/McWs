@@ -9,8 +9,9 @@ import function
 import image
 import re
 import ForQQ
+import nbtread
 
-async def main(pkt,client,command,commandResults):
+async def main(pkt,client,command,commandResults,wait_sympol):
 	# 判断是否为玩家信息，有可能是指令回包
 	if pkt["type"] == "message":
 		message = pkt["message"].split(" ")
@@ -39,6 +40,9 @@ async def main(pkt,client,command,commandResults):
 			elif re.search(r"^#qqmsg",cmd):
 				await client.send(command(say("如果您希望更改账号配置，请修改config.py中的相关内容~~~")))
 				ForQQ._main(client,commandResults)
+
+			elif re.search(r"^#nbt",cmd):
+				nbtread.nbtfile(client,message,wait_sympol)
 
 			elif re.search("^#shutdown",cmd):
 				pid = os.getpid()

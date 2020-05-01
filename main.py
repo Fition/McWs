@@ -13,6 +13,7 @@ import check
 
 
 os.system("cls")
+wait_sympol = [False,True]
 
 def getPlayerInfo(string) -> str:
 	pkt = json.loads(string)
@@ -23,11 +24,19 @@ def getPlayerInfo(string) -> str:
 		os.system("taskkill /pid /f "+str(pid))
 	return name
 
-async def is_wait(pkt):
+async def is_wait(pkt,wait_sympol):
 	# 导入建筑时，需要确定玩家坐标，需要接收指令回包，这时就必须保证指令回包不被主进程抢走
+	for i in range(5):
+		print("wait_sympol is is is is is is",wait_sympol)
 	try:
 		if "#func" in pkt["message"]:
 			await asyncio.sleep(2)
+	except:
+		pass
+	try:
+		if wait_sympol[0]:
+			print("zusezuse\tzueseoiaj\tasejf\taaeowijfs\a")
+			await asyncio.sleep(5)
 	except:
 		pass
 
@@ -49,9 +58,9 @@ async def main(client,*args):
 		pkt = check.getMessageInfo(await client.recv(),name)
 		if pkt["type"] == "command":
 			commandResults.append(pkt)
-		asyncio.create_task(init.main(pkt,client,_sm.command,commandResults))
+		asyncio.create_task(init.main(pkt,client,_sm.command,commandResults,wait_sympol))
 		# 判断是否需要阻塞
-		await is_wait(pkt)
+		await is_wait(pkt,wait_sympol)
 		await asyncio.sleep(0)
 
 server = ws.serve(main,'',1234)
