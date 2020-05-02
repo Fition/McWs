@@ -1,12 +1,13 @@
 import asyncio
 import os
-
 import python_nbt.nbt as nbt
-from nbtread.namespace import *
-from nbtread import keep
-from send_message import *
-import function
 import json
+
+from send_message import *
+from nbtread import keep
+from nbtread.namespace import *
+from nbtread import datavalue
+import function
 import cmdarg
 
 
@@ -49,6 +50,7 @@ async def _nbtfile(client,message,wait_sympol,bad_packages):
 		block_id = each["state"].value
 		block_name = proto["palette"][block_id]["Name"].value
 		if not block_name == "minecraft:air":
+			block_name = datavalue.getBlockValue(block_name,block_id,proto)
 			block_pos = {}
 			block_pos["x"] = each["pos"][0].value
 			block_pos["y"] = each["pos"][1].value
