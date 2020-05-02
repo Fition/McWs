@@ -12,14 +12,41 @@ import ForQQ
 import nbtread
 import saysay
 
-async def main(pkt,client,command,commandResults,wait_sympol):
+async def main(pkt,client,command,commandResults,			# normal
+		wait_sympol,			# 阻塞主线程用
+		bad_packages			# 补包用
+		):
 	# 判断是否为玩家信息，有可能是指令回包
 	if pkt["type"] == "message":
 		message = pkt["message"].split(" ")
+			
+		# 用于处理连续的多个空格
+		removes = []
+		for i in range(len(message)):
+			message[i] = message[i].replace(" ","")
+			if message[i] == "":
+				removes.append(i)
+
+		for each in removes:
+			message.pop(each)
+		# ===============================================================
+
 		if pkt["type"] == "message":
 			cmd = message[0]
+			
+			# 涉及建筑导入部分
+			if re.search(r"^#func",cmd):
+				function.build(message,client,wait_sympol,bad_packages)
 
-			if re.search(r"^#ag-create",cmd):
+			elif re.search(r"^#nbt",cmd):
+				nbtread.nbtfile(client,message,wait_sympol,bad_packages)
+
+			elif re.search("^#pic",cmd):
+				image.pic(message,client,wait_sympol,bad_packages)
+
+			# =========== 其他部分 =================================================
+
+			elif re.search(r"^#ag-create",cmd):
 				await client.send(command("agent create"))
 
 			elif re.search(r"^#ag-attack",cmd):
@@ -32,18 +59,14 @@ async def main(pkt,client,command,commandResults,wait_sympol):
 			elif re.search(r"^#ag-cmd",cmd):
 				agent.cmd(message,client)
 
-			elif re.search(r"^#func",cmd):
-				function.build(message,client)
-
-			elif re.search("^#pic",cmd):
-				image.pic(message,client)
 
 			elif re.search(r"^#qqmsg",cmd):
 				await client.send(command(say("如果您希望更改账号配置，请修改config.py中的相关内容~~~")))
 				ForQQ._main(client,commandResults)
 
-			elif re.search(r"^#nbt",cmd):
-				nbtread.nbtfile(client,message,wait_sympol)
+			elif re.search(r"^#炸服助手",cmd):
+				take_water.main(client,wait_sympol)
+
 
 			elif re.search(r"^#无障碍模式",cmd):
 				saysay.main(client)

@@ -1,19 +1,23 @@
+import asyncio
+import os
+
 import python_nbt.nbt as nbt
 from nbtread.namespace import *
 from nbtread import keep
 from send_message import *
 import function
 import json
-
-import asyncio
-import os
+import cmdarg
 
 
-async def _nbtfile(client,pkt,wait_sympol):
+async def _nbtfile(client,message,wait_sympol,bad_packages):
 	try:
-		# 		nbtfile = read_nbt(pkt[1])
-		open(pkt[1],"a").close()
-		file_size = os.path.getsize(pkt[1])
+		args = cmdarg.Cmd(message)
+		file_path = args.get_value("-p")
+		fun_fps = args.get_value("-t")
+
+		open(file_path,"a").close()
+		file_size = os.path.getsize(file_path)
 		if file_size < 1024*512:
 			say_size = int(file_size/1024)
 			danwei = "KB"
@@ -25,7 +29,11 @@ async def _nbtfile(client,pkt,wait_sympol):
 		pay_time = file_size/1
 		await client.send(command(say(f"文件大小为: {say_size}{danwei}")))
 		await client.send(command(status("正在读取,请稍等...")))
-		proto = read_nbt(pkt[1])
+
+		read_time = int(file_size/(2.8*1024))		# 经测算，建筑大小与读取所用时间数值之比大约为 2.8:1
+		await client.send(command(say(f"预计读取和解析时间共需 {read_time} 秒")))
+		await asyncio.sleep(0)
+		proto = read_nbt(file_path)
 		await client.send(command(status("已经读取完毕,正在解析数据...")))
 		await asyncio.sleep(1)
 	except:
@@ -46,14 +54,13 @@ async def _nbtfile(client,pkt,wait_sympol):
 			block_pos["y"] = each["pos"][1].value
 			block_pos["z"] = each["pos"][2].value
 			keep.main(block_pos,block_name,file_name)
-# 			await asyncio.sleep(0)
-	wait_sympol[0] = True
-# 	await client.send(command("testfor @s"))
-	await client.send(command(ok("已完成NBT文件解析,开始导入...")))
-	await asyncio.sleep(2)
-	function.build(["#func","TEMP.ghostworker",pkt[2]],client)
-	await asyncio.sleep(3)
-	wait_sympol[0] = False
 
-def nbtfile(client,pkt,wait_sympol):
-	asyncio.create_task(_nbtfile(client,pkt,wait_sympol))
+	await client.send(command(ok("已完成NBT文件解析,开始导入...")))
+	function.build(
+			["#func","-p","TEMP.ghostworker","-t",str(fun_fps)],
+			client,
+			wait_sympol,
+			bad_packages)
+
+def nbtfile(client,message,wait_sympol,bad_packages):
+	asyncio.create_task(_nbtfile(client,message,wait_sympol,bad_packages))

@@ -33,8 +33,8 @@ async def is_wait(pkt,wait_sympol):
 		pass
 	try:
 		if wait_sympol[0]:
-			print("zusezuse\tzueseoiaj\tasejf\taaeowijfs\a")
-			await asyncio.sleep(5)
+			while wait_sympol[0]:
+				await asyncio.sleep(0.1)
 	except:
 		pass
 
@@ -52,22 +52,20 @@ async def main(client,*args):
 	
 	# 用于收集指令回包
 	commandResults = []
+	# 用于补包
+	bad_packages = []
 	while True:
-		pkt = check.getMessageInfo(await client.recv(),name)
-		if pkt["type"] == "command":
-			commandResults.append(pkt)
+		pkt = check.getMessageInfo(await client.recv(),name,bad_packages)
 		asyncio.create_task(
-				init.main(
-					pkt,
-					client,
-					_sm.command,
-					commandResults,
-					wait_sympol
-					))
+				init.main(pkt,client,_sm.command,commandResults,		# normal
+					wait_sympol,			# 阻塞主线程用
+					bad_packages			# 补包用
+					)
+				)
 		# 判断是否需要阻塞
 		await is_wait(pkt,wait_sympol)
 		await asyncio.sleep(0)
 
-server = ws.serve(main,'',2345)
+server = ws.serve(main,'',1234)
 asyncio.get_event_loop().run_until_complete(server)
 asyncio.get_event_loop().run_forever()

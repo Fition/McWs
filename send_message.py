@@ -2,11 +2,11 @@ import packages
 import json
 
 # 生成指令数据包
-def command(cmd) -> str:
+def command(cmd,id_ = 0) -> str:
 	pk = packages.main['normal']
 	pk['body']['commandLine'] = cmd
 # 	pk['header']['requestId'] = "00000000-0000-0000-0000-" + str(random.randint(100000000000,900000000009))
-	pk['header']['requestId'] = "00000000-0000-0000-0000-000000000000"
+	pk['header']['requestId'] = "00000000-0000-0000-0000-"+str(id_)
 	re = json.dumps(pk)
 	return re
 
