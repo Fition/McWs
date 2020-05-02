@@ -13,7 +13,7 @@ import check
 
 
 os.system("cls")
-wait_sympol = [False,True]
+wait_sympol = [False,]
 
 def getPlayerInfo(string) -> str:
 	pkt = json.loads(string)
@@ -26,8 +26,6 @@ def getPlayerInfo(string) -> str:
 
 async def is_wait(pkt,wait_sympol):
 	# 导入建筑时，需要确定玩家坐标，需要接收指令回包，这时就必须保证指令回包不被主进程抢走
-	for i in range(5):
-		print("wait_sympol is is is is is is",wait_sympol)
 	try:
 		if "#func" in pkt["message"]:
 			await asyncio.sleep(2)
@@ -49,7 +47,7 @@ async def main(client,*args):
 	await asyncio.sleep(2)
 	await client.send(json.dumps(packages.main["subscribe"]))
 	await client.send(_sm.command(_sm.ok("已经接收订阅数据包!")))
-	await client.send(_sm.command(_sm.say("作者:阖庐")))
+	await client.send(_sm.command(_sm.say("作者:阖庐(GhostWorker)")))
 	await client.send(_sm.command(_sm.say("操作员: "+name)))
 	
 	# 用于收集指令回包
@@ -58,11 +56,18 @@ async def main(client,*args):
 		pkt = check.getMessageInfo(await client.recv(),name)
 		if pkt["type"] == "command":
 			commandResults.append(pkt)
-		asyncio.create_task(init.main(pkt,client,_sm.command,commandResults,wait_sympol))
+		asyncio.create_task(
+				init.main(
+					pkt,
+					client,
+					_sm.command,
+					commandResults,
+					wait_sympol
+					))
 		# 判断是否需要阻塞
 		await is_wait(pkt,wait_sympol)
 		await asyncio.sleep(0)
 
-server = ws.serve(main,'',1234)
+server = ws.serve(main,'',2345)
 asyncio.get_event_loop().run_until_complete(server)
 asyncio.get_event_loop().run_forever()

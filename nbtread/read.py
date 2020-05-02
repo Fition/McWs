@@ -6,30 +6,36 @@ import function
 import json
 
 import asyncio
+import os
+
 
 async def _nbtfile(client,pkt,wait_sympol):
 	try:
 		# 		nbtfile = read_nbt(pkt[1])
 		open(pkt[1],"a").close()
+		file_size = os.path.getsize(pkt[1])
+		if file_size < 1024*512:
+			say_size = int(file_size/1024)
+			danwei = "KB"
+		else:
+			say_size = file_size/1024/1024
+			danwei = "MB"
+
+		# 速度 1：		8KB		
+		pay_time = file_size/1
+		await client.send(command(say(f"文件大小为: {say_size}{danwei}")))
 		await client.send(command(status("正在读取,请稍等...")))
 		proto = read_nbt(pkt[1])
 		await client.send(command(status("已经读取完毕,正在解析数据...")))
-		await asyncio.sleep(2)
+		await asyncio.sleep(1)
 	except:
-		await client.send(command(ok("未找到目标文件")))
-		exit()
-	"""
-	await client.send(command(status("正在读取...")))
-	try:
-		proto = json.loads(str(nbtfile).replace(" ","").replace("\'","\""))
-	except:
-		with open("D:\\error","w") as f:
-			f.write(str(nbtfile).replace("\'","\""))
-	"""
+		await client.send(command(alert("未找到目标文件")))
+		return
+
 	blocks = proto["blocks"]
 
 	# 方块解析
-	file_name = "D:\\TEMP"
+	file_name = "TEMP.ghostworker"
 	open(file_name,"w").close()
 	for each in blocks:
 		block_id = each["state"].value
@@ -45,13 +51,9 @@ async def _nbtfile(client,pkt,wait_sympol):
 # 	await client.send(command("testfor @s"))
 	await client.send(command(ok("已完成NBT文件解析,开始导入...")))
 	await asyncio.sleep(2)
-	function.build(["#func","D:\\TEMP",pkt[2]],client)
+	function.build(["#func","TEMP.ghostworker",pkt[2]],client)
 	await asyncio.sleep(3)
 	wait_sympol[0] = False
-	"""
-	await asyncio.sleep(1)
-	wait_sympol[1] = True
-	"""
 
 def nbtfile(client,pkt,wait_sympol):
 	asyncio.create_task(_nbtfile(client,pkt,wait_sympol))

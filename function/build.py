@@ -59,10 +59,18 @@ async def _build(message,client):
 			player_pos = result["body"]["destination"]
 		except:
 			if "NBT" in str(result):			# NBT 的提示下一个包就是 testfor 回包
-				result = json.loads(await client.recv())
+				while True:
+					result = json.loads(await client.recv())
+					if "已完成" in str(result):
+						pass
+					else:
+						break
 				try:
 					player_pos = result["body"]["destination"]
 				except:
+					print("="*80)
+					print(result)
+					print("="*80)
 					await client.send(command(alert("请稍等一会，您的世界处理不了这么多请求~~~")))
 					return
 			else:

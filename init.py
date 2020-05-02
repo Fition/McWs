@@ -10,6 +10,7 @@ import image
 import re
 import ForQQ
 import nbtread
+import saysay
 
 async def main(pkt,client,command,commandResults,wait_sympol):
 	# 判断是否为玩家信息，有可能是指令回包
@@ -43,6 +44,9 @@ async def main(pkt,client,command,commandResults,wait_sympol):
 
 			elif re.search(r"^#nbt",cmd):
 				nbtread.nbtfile(client,message,wait_sympol)
+
+			elif re.search(r"^#无障碍模式",cmd):
+				saysay.main(client)
 
 			elif re.search("^#shutdown",cmd):
 				pid = os.getpid()

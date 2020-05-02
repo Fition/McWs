@@ -21,5 +21,5 @@ def pic(message,client):
 			pixel = img.getpixel((w,h))
 			put.onemode(pixel,to_path,(w,h))
 
-# 	message = ["#func",to_path,t_arg]
-# 	asyncio.create_task(function.build(message,client))
+	message = ["#func",to_path,t_arg]
+	asyncio.create_task(function.build(message,client))

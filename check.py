@@ -33,4 +33,3 @@ def getMessageInfo(string,name) -> dict:
 	# 不知道什么东西
 	else:
 		return {"type":"unknown"}
-
