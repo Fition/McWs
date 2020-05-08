@@ -9,6 +9,7 @@ from nbtread.namespace import *
 from nbtread import datavalue
 import function
 import cmdarg
+import api
 
 
 async def _nbtfile(client,message,wait_sympol,bad_packages):
@@ -44,8 +45,7 @@ async def _nbtfile(client,message,wait_sympol,bad_packages):
 	blocks = proto["blocks"]
 
 	# 方块解析
-	file_name = "TEMP.ghostworker"
-	open(file_name,"w").close()
+	lines = []
 	for each in blocks:
 		block_id = each["state"].value
 		block_name = proto["palette"][block_id]["Name"].value
@@ -55,14 +55,22 @@ async def _nbtfile(client,message,wait_sympol,bad_packages):
 			block_pos["x"] = each["pos"][0].value
 			block_pos["y"] = each["pos"][1].value
 			block_pos["z"] = each["pos"][2].value
-			keep.main(block_pos,block_name,file_name)
+
+			localpos = ""
+			for each in block_pos:
+				if block_pos[each] == 0:
+					localpos += "~"
+				else:
+					localpos += "~" + str(block_pos[each])
+			block_name = block_name.replace("minecraft:","")
+			lines.append(f"setblock {localpos} {block_name}")
 
 	await client.send(command(ok("已完成NBT文件解析,开始导入...")))
-	function.build(
-			["#func","-p","TEMP.ghostworker","-t",str(fun_fps)],
-			client,
-			wait_sympol,
-			bad_packages)
+	
+	args = api.getArgs(message)
+
+	await api.getPosAndLines(client,wait_sympol,lines,args)
+	await api.sendBuildingPackages(client,lines,args["fps"],bad_packages)
 
 def nbtfile(client,message,wait_sympol,bad_packages):
 	asyncio.create_task(_nbtfile(client,message,wait_sympol,bad_packages))

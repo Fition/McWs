@@ -12,6 +12,7 @@ import ForQQ
 import nbtread
 import saysay
 
+
 async def main(pkt,client,command,commandResults,			# normal
 		wait_sympol,			# 阻塞主线程用
 		bad_packages			# 补包用
@@ -19,9 +20,8 @@ async def main(pkt,client,command,commandResults,			# normal
 	# 判断是否为玩家信息，有可能是指令回包
 	if pkt["type"] == "message":
 		message = pkt["message"].split(" ")
-			
 		# 用于处理连续的多个空格
-		removes = []
+		removes = []			#咋还没加载ideavimrc？
 		for i in range(len(message)):
 			message[i] = message[i].replace(" ","")
 			if message[i] == "":
